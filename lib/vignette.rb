@@ -4,6 +4,7 @@ require "vignette/filter"
 
 module Vignette
   # Your code goes here...
+  mattr_accessor :logging
   mattr_accessor :store
   mattr_accessor :request, :session, :cookies
 
@@ -11,16 +12,18 @@ module Vignette
 
   # Defaults
   Vignette.store = :session
-
+  Vignette.logging = false
+  
   # We're going to include ArrayExtensions
   ActionController::Base.send(:include, ObjectExtensions::ActionControllerExtensions)
   Array.send(:include, ObjectExtensions::ArrayExtensions)
 
   # Member Functions
-
+  
   def self.init(opts={})
     opts = {
-      store: :session
+      store: nil,
+      logging: nil
     }.with_indifferent_access.merge(opts)
 
     Vignette.store = opts[:store]
