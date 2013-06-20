@@ -7,9 +7,9 @@ Gem::Specification.new do |gem|
   gem.name          = "vignette"
   gem.version       = Vignette::VERSION
   gem.authors       = ["Geoff Hayes"]
-  gem.email         = ["hayesgm@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.email         = ["geoff@safeshepherd.com"]
+  gem.description   = %q{Simple, effective A/b testing made easy.}
+  gem.summary       = %q{With a few simple features, get A/b testing up in your application.}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
