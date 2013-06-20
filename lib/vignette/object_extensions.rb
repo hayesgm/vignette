@@ -5,12 +5,27 @@ module ObjectExtensions
 
     # Test will select a random object from the Array
     def vignette(name=nil)
-      key = "vignette_#{name || hash}"
-      test_name = if name.blank?
+      key = "vignette_#{name || hash.abs.to_s(16)}"
+      test_name = nil
+
+      if name.blank?
         if caller[0].include?('filter.rb')
-          caller[1].split(':in')[0].gsub(Rails.root.to_s,'') # Take the view name
+          # E.g /Users/hayesgm/animals/shadow/app/views/landing/family.html.haml:11:in `_app_views_landing_family_html_haml__3008026497873467685_70232967999960'
+          # -> app/views/landing/family.html.haml:313c7f3a472883ba
+          filename = caller[1].split(':')[0].gsub(Rails.root.to_s+'/','') # Take the view name
+          test_name = "#{filename}:#{hash.abs.to_s(16)}"
         else
-          caller[0].gsub(Rails.root.to_s,'') # Take everything but the Rails root portion
+          # E.g /Users/hayesgm/animals/shadow/app/controllers/home_controller.rb:27:in `home'
+          # -> app/controllers/home_controller:home:313c7f3a472883ba
+          line = caller[0].gsub(Rails.root.to_s+'/','') # Take everything but the Rails root portion
+          
+          m = /(?<filename>[\w.\/]+):(?<line>\d+):in `(?<function>\w+)'/.match(line)
+          
+          if m && !m[:filename].blank? && !m[:function].blank?
+            test_name = "#{m[:filename]}:#{m[:function]}:#{hash.abs.to_s(16)}"
+          else # Fallback
+            test_name = key
+          end
         end
       else
         name
