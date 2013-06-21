@@ -13,13 +13,13 @@ module Vignette
   # Defaults
   Vignette.store = :session
   Vignette.logging = false
-  
+
   # We're going to include ArrayExtensions
   ActionController::Base.send(:include, ObjectExtensions::ActionControllerExtensions)
   Array.send(:include, ObjectExtensions::ArrayExtensions)
 
   # Member Functions
-  
+
   def self.init(opts={})
     opts = {
       store: nil,
@@ -41,6 +41,8 @@ module Vignette
   end
 
   def self.tests
+    return {} if Vignette.request.nil? # Can't return tests outside of yield
+    
     Vignette.request[:vignette] ||= {}
     Vignette.request[:vignette][:tests] ||= {}
     Vignette.request[:vignette][:tests]
