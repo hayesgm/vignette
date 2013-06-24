@@ -59,8 +59,6 @@ Finally, to store in analytics which tests were run, simple check
 
     Vignette.test -> { 'views/orders/new.html.haml:54d3c10a1b21' => 0 } # First choice was select for new.html.haml test
 
-TODO: Write usage instructions here
-
 ## Contributing
 
 1. Fork it
