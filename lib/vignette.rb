@@ -41,7 +41,7 @@ module Vignette
   end
   
   def self.tests(session=Vignette.session)
-    session[:vignette] && session[:vignette][:tests] ? session[:vignette][:tests] : {}
+    ( session[:vignette] && session[:vignette][:tests] ? session[:vignette][:tests] : nil ) || {}
   end
   
   def self.get_store(session=Vignette.session, cookies=Vignette.cookies)
