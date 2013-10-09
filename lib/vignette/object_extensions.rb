@@ -35,28 +35,19 @@ module ObjectExtensions
         name
       end
 
-      store = case Vignette.store
-        when :cookies
-          raise VignetteError::ConfigError, "Missing cookies configuration in Vignette.  Must access Vignette in controller within around_filter." if Vignette.cookies.nil?
-          Rails.logger.debug [ 'Vignette::vignette', 'Cookies Sampling', key, Vignette.cookies[key] ] if Vignette.logging
-          Vignette.cookies
-        when :session
-          raise VignetteError::ConfigError, "Missing session configuration in Vignette.  Must access Vignette in controller within around_filter." if Vignette.session.nil?
-          Rails.logger.debug [ 'Vignette::vignette', 'Session Sampling', key, Vignette.session[key] ] if Vignette.logging
-          Vignette.session
-        else
-          Rails.logger.debug [ 'Vignette::vignette', 'Random Sampling' ] if Vignette.logging
-          {} # This is an empty storage
-        end
-      
-      choice = store[key] ||= rand(length) # Store key into storage if not available
-      
-      # We're going to track all tests in request
-      Vignette.request[:vignette] ||= {}
-      Vignette.request[:vignette][:tests] ||= {}
-      Vignette.request[:vignette][:tests][test_name] = choice
+      store = Vignette.get_store
 
-      self[choice.to_i]
+      choice = store[key] ||= rand(length) # Store key into storage if not available
+      result = self[choice.to_i]
+
+      # TODO: Make this clearer for how to store the test items
+      if Vignette.session
+        Vignette.session[:vignette] ||= {}
+        Vignette.session[:vignette][:tests] ||= {}
+        Vignette.session[:vignette][:tests][test_name] = result
+      end
+      
+      return result
     end
 
   end
