@@ -40,12 +40,8 @@ module ObjectExtensions
       choice = store[key] ||= rand(length) # Store key into storage if not available
       result = self[choice.to_i]
 
-      # TODO: Make this clearer for how to store the test items
-      if Vignette.session
-        Vignette.session[:vignette] ||= {}
-        Vignette.session[:vignette][:tests] ||= {}
-        Vignette.session[:vignette][:tests][test_name] = result
-      end
+      # Let's store keys where they are
+      store[:v] = ( store[:v].present? ? JSON(store[:v]) : {} ).merge(test_name => result).to_json
       
       return result
     end
