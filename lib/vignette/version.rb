@@ -1,3 +1,3 @@
 module Vignette
-  VERSION = "0.0.6pre1"
+  VERSION = "0.0.6"
 end

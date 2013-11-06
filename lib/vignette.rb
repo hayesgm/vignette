@@ -1,6 +1,7 @@
 require "vignette/version"
 require "vignette/object_extensions"
 require "vignette/filter"
+require "vignette/vignette_errors"
 
 module Vignette
   # Your code goes here...
