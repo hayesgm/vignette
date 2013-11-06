@@ -8,7 +8,7 @@ Vignette is as simple as sampling from an Array:
 
     @price = [5, 10, 15].vignette
 
-We've also added a filter to HAML for testing:
+We've also added a filter to HAML for running quick A/b tests:
 
     %h1
       :vignette
@@ -32,7 +32,7 @@ Or install it yourself as:
 
 ## Usage
 
-Vignette was crafted to make A/b testing as simple as possible.  Simply run the `vignette` function on any Array and get the result from a A/b test.  Vignette will store this choice in session, a cookies or nowhere, based on how you configure Vignette.  For this to work, all calls to Vignette must be within the request cycle (within an around_filter in ActionController::Base).  Test are identified by a checksum of the Array, and thus, changing the Array will restart that test.
+Vignette was crafted to make A/b testing as simple as possible.  Simply run the `vignette` function on any Array and get the result from a A/b test.  Vignette will store this choice in session, a cookies or nowhere, based on how you configure Vignette.  If you're in the request cycle (within an around_filter), Vignette will grab `session` or `cookies` for you.  Otherwise, you'll need to specify where to store the result (if you want it consistent for the end-user).  Vignette `tests` are identified by a checksum of the Array, and thus, changing the Array results in a new `test`.
   
     # To store in session (default)
     Vignette.init(:session)
@@ -40,7 +40,7 @@ Vignette was crafted to make A/b testing as simple as possible.  Simply run the 
     # To use cookies
     Vignette.init(:cookies)
 
-    # Or random sampling
+    # Or random sampling [no persistence]
     Vignette.init(:random)
 
 Running tests:
@@ -57,7 +57,9 @@ Running tests:
 
 Finally, to store in analytics which tests were run, simple check
 
-    Vignette.test -> { 'views/orders/new.html.haml:54d3c10a1b21' => 0 } # First choice was select for new.html.haml test
+    Vignette.test -> { 'views/orders/new.html.haml:54d3c10a1b21' => 'Test one' } # First choice was select for new.html.haml test
+
+N.B. If you choose to store your `tests` in `cookies`, then the chosen result will be stored in a cookie sent to the user's browser.  Thus, be careful not to store any secret information in a test.
 
 ## Contributing
 
