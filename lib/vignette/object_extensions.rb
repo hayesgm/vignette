@@ -37,9 +37,9 @@ module ObjectExtensions
 
       store = Vignette.get_store
 
-      choice = store[key] ||= rand(length) # Store key into storage if not available
+      choice = store[key] ||= Kernel.rand(length) # Store key into storage if not available
       result = self[choice.to_i]
-
+      
       # Let's store keys where they are
       store[:v] = ( store[:v].present? ? JSON(store[:v]) : {} ).merge(test_name => result).to_json
       
