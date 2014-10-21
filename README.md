@@ -35,13 +35,16 @@ Or install it yourself as:
 Vignette was crafted to make A/b testing as simple as possible.  Simply run the `vignette` function on any Array and get the result from a A/b test.  Vignette will store this choice in session, a cookies or nowhere, based on how you configure Vignette.  If you're in the request cycle (within an around_filter), Vignette will grab `session` or `cookies` for you.  Otherwise, you'll need to specify where to store the result (if you want it consistent for the end-user).  Vignette `tests` are identified by a checksum of the Array, and thus, changing the Array results in a new `test`.
   
     # To store in session (default)
-    Vignette.init(:session)
+    Vignette.init(store: :session)
 
     # To use cookies
-    Vignette.init(:cookies)
+    Vignette.init(store: :cookies)
 
     # Or random sampling [no persistence]
-    Vignette.init(:random)
+    Vignette.init(store: :random)
+
+    # Other options
+    Vignette.init(logging: true) # add debug logging
 
 Running tests:
 
