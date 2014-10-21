@@ -32,8 +32,10 @@ module ObjectExtensions
           end
         end
       else
-        name
+        name # TODO: This should be test_name = name
       end
+
+      # p ['Test name',test_name]
 
       store = Vignette.get_store
 
