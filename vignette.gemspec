@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["geoff@safeshepherd.com"]
   gem.description   = %q{Simple, effective A/b testing made easy.}
   gem.summary       = %q{With a few simple features, get A/b testing up in your application.}
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/hayesgm/vignette"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
