@@ -17,7 +17,7 @@ describe Haml::Filters::Vignette do
 " }
     
       it "should raise error" do
-        Vignette.with_settings(nil, session, nil) do
+        Vignette.with_repo(session) do
           html = Haml::Engine.new(template).render
 
           expect(html).to match(/\<p\>\s+three\s+\<\/p\>\n/)
@@ -38,7 +38,7 @@ describe Haml::Filters::Vignette do
 " }
 
       it "should correctly call vignette from render" do
-        Vignette.with_settings(nil, session, nil) do
+        Vignette.with_repo(session) do
           html = Haml::Engine.new(template).render
 
           expect(html).to eq("<p>\n  three\n</p>\n")
@@ -53,7 +53,7 @@ describe Haml::Filters::Vignette do
       before(:each) { expect(Kernel).to receive(:rand).and_return(2, 1) }
 
       it "should correctly call vignette from render" do
-        Vignette.with_settings(nil, session, nil) do
+        Vignette.with_repo(session) do
           template = File.read(template_file)
 
           html = Haml::Engine.new(template, filename: template_file).render

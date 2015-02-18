@@ -13,10 +13,9 @@ module Vignette
     class TemplateRequiresNameError < VignetteStandardError; end
   end
 
-  # Your code goes here...
+  # Module Attributes, please set via `init()`
   mattr_accessor :logging
   mattr_accessor :store
-  mattr_accessor :request, :session, :cookies
 
   # Initialization Code
 
@@ -30,66 +29,67 @@ module Vignette
 
   # Member Functions
 
+  # Set any initializers
   def self.init(opts={})
-    opts = {
-      store: nil,
-      logging: nil
-    }.with_indifferent_access.merge(opts)
-
-    Vignette.store = opts[:store]
-  end
-  
-  # Settings for configuations
-  def self.request_config(request, session, cookies)
-    Vignette.request = request
-    Vignette.session = session
-    Vignette.cookies = cookies
+    opts.each do |k,v|
+      Vignette.send("#{k}=", v)
+    end
   end
 
-  def self.with_settings(request, session, cookies)
+  # Sets the current repo to be used to get and store tests for this thread
+  def self.set_repo(repo)
+    Thread.current[:vignette_repo] = repo
+  end
+
+  # Clears the current repo on this thread
+  def self.clear_repo
+    set_repo(nil)
+  end
+
+  # Performs block with repo set to `repo` for this thread
+  def self.with_repo(repo)
     begin
-      Vignette.request_config(request, session, cookies)
+      Vignette.set_repo(repo)
 
       yield
     ensure
-      Vignette.clear_request
+      Vignette.clear_repo
     end
   end
-  
-  def self.clear_request
-    Vignette.request = Vignette.session = Vignette.cookies = nil # clear items
+
+  # Is Vignette active for this thread (i.e. do we have a repo?)
+  def self.active?
+    !Thread.current[:vignette_repo].nil?
   end
-  
-  def self.tests(session=Vignette.session, cookies=Vignette.cookies)
-    store = get_store(session, cookies)
-    store && store[:v].present? ? JSON(store[:v]) : {}
-    if store && store[:v].present?
-      v = JSON(store[:v])
 
-      name_values = v.values.map { |v| [ v['n'], [ v['t'], v['v'] ] ] }.group_by { |el| el[0] }
+  # Get the repo for this thread
+  def self.repo
+    raise Errors::ConfigError.new("Repo not active, please call Vignette.set_repo before using Vignette (or use around_filter in Rails)") if !active?
 
-      arr = name_values.map { |k,v| [ k.to_sym, v.sort { |a,b| b[1][0] <=> a[1][0] }.first[1][1] ] }
-
-      Hash[arr]
-    else
-      {}
-    end
+    Thread.current[:vignette_repo]
   end
-  
-  def self.get_store(session=Vignette.session, cookies=Vignette.cookies)
-    case Vignette.store
-    when :cookies
-      raise Errors::ConfigError, "Missing cookies configuration in Vignette.  Must access Vignette in controller within around_filter." if cookies.nil?
-      Rails.logger.debug [ 'Vignette::vignette', 'Cookies Sampling', cookies ] if Vignette.logging
-      cookies.signed
-    when :session
-      raise Errors::ConfigError, "Missing session configuration in Vignette.  Must access Vignette in controller within around_filter." if session.nil?
-      Rails.logger.debug [ 'Vignette::vignette', 'Session Sampling', session ] if Vignette.logging
-      session
-    else
-      Rails.logger.debug [ 'Vignette::vignette', 'Random Sampling' ] if Vignette.logging
-      {} # This is an empty storage
-    end
+
+  # From the repo (default whatever is set for the thread), grab Vignettes' repo and unpack
+  def self.vig(repo=nil)
+    repo ||= Vignette.repo # allow using existing
+
+    repo && repo[:v].present? ? JSON(repo[:v]) : {}
+  end
+
+  # For this repo, store an update Vig
+  def self.set_vig(vig)
+    repo[:v] = vig.to_json
+  end
+
+  # Pull all the tests for this current repo
+  def self.tests(vig=nil)
+    vig ||= Vignette.vig
+
+    name_values = vig.values.map { |v| [ v['n'], [ v['t'], v['v'] ] ] }.group_by { |el| el[0] }
+
+    arr = name_values.map { |k,v| [ k.to_sym, v.sort { |a,b| b[1][0] <=> a[1][0] }.first[1][1] ] }
+
+    Hash[arr]
   end
 
   private

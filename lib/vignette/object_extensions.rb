@@ -20,13 +20,12 @@ module ObjectExtensions
       key = "vignette_#{vignette_crc}"
       test_name = nil
 
-      store = Vignette.get_store
-      v = store[:v] ? JSON(store[:v]) : {}
+      vig = Vignette.vig
 
       test_name = if expect_consistent_name && name.present?
         name
-      elsif v[vignette_crc]
-        v[vignette_crc]['n']
+      elsif vig[vignette_crc]
+        vig[vignette_crc]['n']
       elsif name.present? # this logic looks weird, but this is if we don't expect consistent names *and* we don't have a name in v[]
         name
       else
@@ -34,13 +33,13 @@ module ObjectExtensions
         "(#{Vignette::strip_path(loc.absolute_path)}:#{loc.lineno})"
       end
 
-      result = if v.has_key?(vignette_crc)
-        v[vignette_crc]['v']
+      result = if vig.has_key?(vignette_crc)
+        vig[vignette_crc]['v']
       else
         # Store key into storage if not available
         new_value = self[Kernel.rand(length)]
 
-        store[:v] = v.merge(vignette_crc => { n: test_name, v: new_value, t: Time.now.to_i }).to_json
+        Vignette.set_vig( vig.merge(vignette_crc => { n: test_name, v: new_value, t: Time.now.to_i }) )
 
         new_value
       end
@@ -53,16 +52,25 @@ module ObjectExtensions
   module ActionControllerExtensions
 
     def self.included(controller)
-      controller.around_filter(:init_vignette)
+      controller.around_filter(:with_vignettes)
     end
 
     private
 
-    def init_vignette
-      Vignette.request_config(request, session, cookies)
-      yield
-    ensure
-      Vignette.clear_request # Clear request
+    def with_vignettes
+      # set repo based on what type of store we want
+      repo = case Vignette.store
+      when :session
+        session
+      when :cookies
+        cookies
+      when nil, :random
+        Hash.new
+      end
+
+      Vignette.with_repo(repo) do
+        yield
+      end
     end
 
   end

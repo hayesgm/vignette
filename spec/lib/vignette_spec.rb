@@ -5,7 +5,7 @@ describe Vignette do
   context 'with simple session store' do
     let!(:session) { Hash.new }
     let(:array) { %w{a b c} }
-    before { Vignette.session = session }
+    before { Vignette.set_repo(session) }
 
     it 'should have correct crc' do
       expect(array.crc).to eq(891568578)
@@ -96,6 +96,85 @@ describe Vignette do
         expect(Vignette.strip_path(path)).to eq('d.ex')
       end
     end
+  end
+
+  context 'when threading' do
+    before(:each) { expect(Kernel).to receive(:rand).and_return(1, 2) }
+
+    context 'serially' do
+      it 'should work like normal' do
+        
+        Thread.new do
+          Vignette.with_repo(Hash.new) do
+            expect(%w{a b c}.vignette(:name)).to eq('b')
+            expect(Vignette.tests).to eq(name: 'b')
+          end
+        end.join
+
+        Thread.new do
+          Vignette.with_repo(Hash.new) do
+            expect(%w{a b c}.vignette(:name)).to eq('c')
+            expect(Vignette.tests).to eq(name: 'c')
+          end
+        end.join
+      end
+
+    end
+
+    context 'with no delays' do
+      it 'should work like normal' do
+        threads = []
+
+        threads << Thread.new do
+          Vignette.with_repo(Hash.new) do
+            expect(%w{a b c}.vignette(:name)).to eq('b')
+            expect(Vignette.tests).to eq(name: 'b')
+          end
+        end
+
+        threads << Thread.new do
+          Vignette.with_repo(Hash.new) do
+            expect(%w{a b c}.vignette(:name)).to eq('c')
+            expect(Vignette.tests).to eq(name: 'c')
+          end
+        end
+
+        threads.each(&:join)
+      end
+    end
+
+    context 'with a one second delay' do
+      it 'should work like normal' do
+        threads = []
+
+        threads << Thread.new do
+          Vignette.with_repo(Hash.new) do
+            sleep 0.1 # this is to cause a race condition
+            expect(%w{a b c}.vignette(:name)).to eq('c')
+            expect(Vignette.tests).to eq(name: 'c')
+
+            sleep 0.2
+            expect(%w{a b c}.vignette(:name)).to eq('c')
+            expect(Vignette.tests).to eq(name: 'c')
+          end
+        end
+
+        threads << Thread.new do
+          Vignette.with_repo(Hash.new) do
+            expect(%w{a b c}.vignette(:name)).to eq('b')
+            expect(Vignette.tests).to eq(name: 'b')
+
+            sleep 0.2
+
+            expect(%w{a b c}.vignette(:name)).to eq('b')
+            expect(Vignette.tests).to eq(name: 'b')            
+          end
+        end
+
+        threads.each(&:join)
+      end
+    end
+    
   end
 
 end

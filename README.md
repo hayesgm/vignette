@@ -92,8 +92,6 @@ If you choose to store your `tests` in `cookies`, then the chosen result will be
 
 For unnamed tests, the system will try to determine the name from the line in the file (e.g. `(app/models/user.rb:50)`).  When it does this, it will keep the name the same so long as the underlying array has the same crc32 code.  That is, even if that vignette moves off of line 50, the test will keep the same "name" until the choices of the test change.  This is a trade-off to allow un-named vignettes to be easily understood in an analytics system without having to name each one unless you would like to.
 
-When using `session` or `cookie` store, this code is not thread-safe.
-
 ## Contributing
 
 1. Fork it
