@@ -31,8 +31,7 @@ describe Haml::Filters::Vignette do
 
       let(:template) { "
 %p
-  :vignette
-    [numbers]
+  :vignette_numbers
     one
     two
     three

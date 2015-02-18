@@ -84,12 +84,11 @@ Vignette tests can also be specifically named, e.g:
 or from HAML:
 
     %div
-      :vignette
-        [dog_names]
+      :vignette_dog_names
         Wooferson
         T-Bone
 
-This will lead to `Vignette.tests` to include: `{ "cat_names" => "Chairman Meow" }`
+This will lead to `Vignette.tests` to include: `{ "cat_names" => "Chairman Meow" }` and `{ "dog_names" => "Wooferson" }`, respectively.  Note, due to limitations in HAML, you must use a filter that starts with `vignette_` and uses only letters, numbers and underscores (`\w+`).
 
 Without a name, Vignettes will try to name themselves based on the name of the falling calling them, e.g. `(app/models/user.rb:25)` or `(app/views/users/new.html.haml:22)`
 

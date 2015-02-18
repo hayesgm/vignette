@@ -10,8 +10,8 @@ if defined?(Haml)
       lines = text.split splitter
 
       # Allow first line to be name of test, if desired
-      if lines.first.strip =~ /^\[(\w+)\]$/
-        lines[1..-1].vignette($1)
+      if options[:name] && options[:name] =~ /vignette_(\w+)/i
+        lines.vignette($1)
 
       # Otherwise, try to use filename and line
       elsif options[:filename] && options[:line]
@@ -33,8 +33,11 @@ if defined?(Haml)
     # I removed that check from below.
     def compile(compiler, text)
       filter = self
+      node = compiler.instance_variable_get('@node')
+
       filename = compiler.options[:filename]
-      line = compiler.instance_variable_get('@node').line
+      line = node.line
+      name = node.value[:name]
 
       compiler.instance_eval do
         return if options[:suppress_eval]
@@ -52,7 +55,7 @@ if defined?(Haml)
         # too many.
         text = %[\n#{text.sub(/\n"\Z/, "\\n\"")}]
         push_script <<RUBY.rstrip, :escape_html => false
-find_and_preserve(#{filter.inspect}.render_with_options(#{text}, _hamlout.options.merge(filename: "#{filename}", line: #{line})))
+find_and_preserve(#{filter.inspect}.render_with_options(#{text}, _hamlout.options.merge(filename: "#{filename}", line: #{line}, name: "#{name}")))
 RUBY
         return
       end
@@ -64,4 +67,18 @@ RUBY
     end
   end
 
+  # This is hack to allow us to pull names from filters
+  module HamlCompilerHack
+
+    def compile_filter
+      if @node.value[:name] =~ /vignette_(\w+)/i
+        Haml::Filters::Vignette.internal_compile(self, @node.value[:text])
+      else
+        super
+      end
+
+    end
+  end
+
+  Haml::Compiler.prepend(HamlCompilerHack)
 end
