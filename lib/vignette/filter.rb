@@ -15,8 +15,11 @@ if defined?(Haml)
 
       # Otherwise, try to use filename and line
       elsif options[:filename] && options[:line]
-        lines.vignette("(#{strip_path(options[:filename])}:#{options[:line]})")
-
+        if options[:filename] == "(haml)"
+          lines.vignette("(haml:#{options[:line]})")
+        else
+          lines.vignette("(#{Vignette::strip_path(options[:filename])}:#{options[:line]})")
+        end
       # If not given, raise an error
       else
         Vignette::Errors::TemplateRequiresNameError.new("Missing filename or [test_name] in Vignette test")
