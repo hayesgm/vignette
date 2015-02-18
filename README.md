@@ -66,7 +66,7 @@ Finally, to store in analytics which tests were run, simple check
 
 Tests are stored in your store object based on the original input.  If you change the input of the test (regardless of the name), a new test will be created.  Thus [1,2,3].vignette(:numbers) and [2,3,4].vignette(:numbers) will always be considered unique tests.  New tests will overwrite old tests with the same name in `Vignette.tests`.  This is by design so that you can update the test, have new results, but keep the same test name in your analytics system.
 
-Note, you must use arrays that will not change between runs.  Thus, [Date.today, 1.days.ago].vignette will end up creating separate tests every time this code is run.  We use a `Zlib.crc32` check to check for uniqueness of an array.
+Note, you must use arrays that will not change between runs.  Thus, `[Date.today, 1.days.ago].vignette` will end up creating separate tests every time this code is run.  We use a `Zlib.crc32` check to check for uniqueness of an array.  Instead, this should be `[0,1].vignette.days.ago`.
 
 If you choose to store your `tests` in `cookies`, then the chosen result will be stored in a cookie sent to the user's browser.  Thus, be careful not to store any secret information in a test.
 
