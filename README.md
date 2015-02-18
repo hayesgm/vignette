@@ -1,6 +1,6 @@
 # Vignette
 
-Vignette makes it dead simple to run reliable A/b tests in your Rails project.
+Vignette makes it dead simple to run reliable A/b tests in your Ruby projects.  Vignette integrates seemlessly with Rails by default.
 
 ## Examples
 
