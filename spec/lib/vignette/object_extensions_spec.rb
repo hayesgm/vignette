@@ -10,7 +10,7 @@ describe ObjectExtensions do
         @@filters
       end
 
-      def self.around_filter(filter)
+      def self.prepend_around_filter(filter)
         @@filters << filter
       end
 

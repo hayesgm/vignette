@@ -52,7 +52,7 @@ module ObjectExtensions
   module ActionControllerExtensions
 
     def self.included(controller)
-      controller.around_filter(:with_vignettes)
+      controller.prepend_around_filter(:with_vignettes)
     end
 
     private
