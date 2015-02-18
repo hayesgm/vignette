@@ -64,18 +64,6 @@ The choices for these tests are exposed through the `Vignette.test` method:
 
 You may store these values as properties in your analytics system.
 
-## Caveats
-
-Tests are stored in your store object based on the original input.  If you change the input of the test (regardless of the name), a new test will be created.  Thus [1,2,3].vignette(:numbers) and [2,3,4].vignette(:numbers) will always be considered unique tests.  New tests will overwrite old tests with the same name in `Vignette.tests`.  This is by design so that you can update the test, have new results, but keep the same test name in your analytics system.
-
-Note, you must use arrays that will not change between runs.  Thus, `[Date.today, 1.days.ago].vignette` will end up creating separate tests every time this code is run.  We use a `Zlib.crc32` check to check for uniqueness of an array.  Instead, this should be `[0,1].vignette.days.ago`.
-
-If you choose to store your `tests` in `cookies`, then the chosen result will be stored in a cookie sent to the user's browser.  Thus, be careful not to store any secret information in a test.
-
-For unnamed tests, the system will try to determine the name from the line in the file (e.g. `(app/models/user.rb:50)`).  When it does this, it will keep the name the same so long as the underlying array has the same crc32 code.  That is, even if that vignette moves off of line 50, the test will keep the same "name" until the choices of the test change.  This is a trade-off to allow un-named vignettes to be easily understood in an analytics system without having to name each one unless you would like to.
-
-When using `session` or `cookie` store, this code is not thread-safe.
-
 ## Naming Tests
 
 Vignette tests can also be specifically named, e.g:
@@ -93,6 +81,18 @@ or from HAML:
 This will lead to `Vignette.tests` to include: `{ "cat_names" => "Chairman Meow" }` and `{ "dog_names" => "Wooferson" }`, respectively.  Note, due to limitations in HAML, you must use a filter that starts with `vignette_` and uses only letters, numbers and underscores (`\w+`).
 
 Without a name, Vignettes will try to name themselves based on the name of the falling calling them, e.g. `(app/models/user.rb:25)` or `(app/views/users/new.html.haml:22)`
+
+## Caveats
+
+Tests are stored in your store object based on the original input.  If you change the input of the test (regardless of the name), a new test will be created.  Thus [1,2,3].vignette(:numbers) and [2,3,4].vignette(:numbers) will always be considered unique tests.  New tests will overwrite old tests with the same name in `Vignette.tests`.  This is by design so that you can update the test, have new results, but keep the same test name in your analytics system.
+
+Note, you must use arrays that will not change between runs.  Thus, `[Date.today, 1.days.ago].vignette` will end up creating separate tests every time this code is run.  We use a `Zlib.crc32` check to check for uniqueness of an array.  Instead, this should be `[0,1].vignette.days.ago`.
+
+If you choose to store your `tests` in `cookies`, then the chosen result will be stored in a cookie sent to the user's browser.  Thus, be careful not to store any secret information in a test.
+
+For unnamed tests, the system will try to determine the name from the line in the file (e.g. `(app/models/user.rb:50)`).  When it does this, it will keep the name the same so long as the underlying array has the same crc32 code.  That is, even if that vignette moves off of line 50, the test will keep the same "name" until the choices of the test change.  This is a trade-off to allow un-named vignettes to be easily understood in an analytics system without having to name each one unless you would like to.
+
+When using `session` or `cookie` store, this code is not thread-safe.
 
 ## Contributing
 
