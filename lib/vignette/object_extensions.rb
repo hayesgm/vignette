@@ -25,8 +25,8 @@ module ObjectExtensions
 
       test_name = if expect_consistent_name && name.present?
         name
-      elsif test_hash = v[vignette_crc]
-        test_hash['name']
+      elsif v[vignette_crc]
+        v[vignette_crc]['n']
       elsif name.present? # this logic looks weird, but this is if we don't expect consistent names *and* we don't have a name in v[]
         name
       else
