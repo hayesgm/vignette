@@ -14,14 +14,20 @@ module ObjectExtensions
       key = "vignette_#{vignette_crc}"
       test_name = nil
 
-      test_name = if name.blank?
-        loc = caller_locations(1,1).first
-        "(#{Vignette::strip_path(loc.absolute_path)}:#{loc.lineno})"
-      else
-        name
-      end
-
       store = Vignette.get_store
+
+      test_name = if name.present?
+        name
+      elsif store[:vt] && original_name = JSON(store[:vt])[vignette_crc]
+        original_name
+      else
+        loc = caller_locations(1,1).first
+        new_name = "(#{Vignette::strip_path(loc.absolute_path)}:#{loc.lineno})"
+
+        store[:vt] = ( store[:vt].present? ? JSON(store[:vt]) : {} ).merge(vignette_crc => new_name).to_json
+
+        new_name
+      end
 
       choice = store[key] ||= Kernel.rand(length) # Store key into storage if not available
       result = self[choice.to_i]

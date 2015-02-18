@@ -20,6 +20,14 @@ describe Vignette do
           expect(array.vignette).to eq('b'); line = __LINE__ # for tracking line number
           expect(Vignette.tests).to eq({"(vignette_spec.rb:#{line})" => 'b'})
         end
+
+        it 'should store tests even if we call on different lines' do
+          expect(array.vignette).to eq('b'); line = __LINE__
+          expect(Vignette.tests).to eq({"(vignette_spec.rb:#{line})" => 'b'})
+
+          expect(array.vignette).to eq('b'); new_line = __LINE__
+          expect(Vignette.tests).to eq({"(vignette_spec.rb:#{line})" => 'b'})
+        end
       end
 
       context "for multiple runs" do
