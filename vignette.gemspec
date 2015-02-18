@@ -16,4 +16,12 @@ Gem::Specification.new do |gem|
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
+
+  gem.add_dependency "activesupport"
+  gem.add_dependency "actionpack"
+
+  gem.add_development_dependency "rspec"
+  gem.add_development_dependency "guard-rspec"
+  gem.add_development_dependency "haml"
+  gem.add_development_dependency "pry-byebug"
 end
