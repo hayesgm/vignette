@@ -46,7 +46,7 @@ Vignette was crafted to make A/b testing as simple as possible.  Simply run the 
     # Other options
     Vignette.init(logging: true) # add debug logging
 
-Running tests:
+Running a Vignette test in your application:
 
     [ 1,2,3 ].vignette # Chooses an option and stores test as indicated above
     %w{one two three}.vignette # Same with strings
