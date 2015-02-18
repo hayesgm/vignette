@@ -24,4 +24,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "guard-rspec", ">= 4.5.0"
   gem.add_development_dependency "haml", ">= 4.0.6"
   gem.add_development_dependency "pry-byebug", ">= 0"
+  gem.add_development_dependency "timecop", ">= 0"
 end

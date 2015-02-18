@@ -63,6 +63,17 @@ module Vignette
   def self.tests(session=Vignette.session, cookies=Vignette.cookies)
     store = get_store(session, cookies)
     store && store[:v].present? ? JSON(store[:v]) : {}
+    if store && store[:v].present?
+      v = JSON(store[:v])
+
+      name_values = v.values.map { |v| [ v['n'], [ v['t'], v['v'] ] ] }.group_by { |el| el[0] }
+
+      arr = name_values.map { |k,v| [ k.to_sym, v.sort { |a,b| b[1][0] <=> a[1][0] }.first[1][1] ] }
+
+      Hash[arr]
+    else
+      {}
+    end
   end
   
   def self.get_store(session=Vignette.session, cookies=Vignette.cookies)

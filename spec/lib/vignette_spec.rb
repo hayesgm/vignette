@@ -18,32 +18,61 @@ describe Vignette do
 
         it 'should store tests in session' do
           expect(array.vignette).to eq('b'); line = __LINE__ # for tracking line number
-          expect(Vignette.tests).to eq({"(vignette_spec.rb:#{line})" => 'b'})
+          expect(Vignette.tests).to eq({:"(vignette_spec.rb:#{line})" => 'b'})
         end
 
         it 'should store tests even if we call on different lines' do
           expect(array.vignette).to eq('b'); line = __LINE__
-          expect(Vignette.tests).to eq({"(vignette_spec.rb:#{line})" => 'b'})
+          expect(Vignette.tests).to eq({:"(vignette_spec.rb:#{line})" => 'b'})
 
           expect(array.vignette).to eq('b'); new_line = __LINE__
-          expect(Vignette.tests).to eq({"(vignette_spec.rb:#{line})" => 'b'})
+          expect(Vignette.tests).to eq({:"(vignette_spec.rb:#{line})" => 'b'})
         end
       end
 
       context "for multiple runs" do
-        before(:each) { expect(Kernel).to receive(:rand).and_return(1, 2) }
+        before(:each) { expect(Kernel).to receive(:rand).and_return(1, 2, 0) }
 
         it 'should store tests in session by name' do
-          expect(array.vignette('cat')).to eq('b')
+          expect(array.vignette(:cat)).to eq('b')
           
-          expect(Vignette.tests).to eq({'cat' => 'b'})
-          expect(session).to eq( {'vignette_352441c2' => 1, v: {'cat' => 'b'}.to_json} )
+          original_time = Time.now
+          second_time = original_time + 1
+          third_time = original_time + 2
+          fourth_time = original_time + 3
 
-          expect(array.vignette('cat')).to eq('b') # same value
-          expect(session).to eq( {'vignette_352441c2' => 1, v: {'cat' => 'b'}.to_json} )
+          Timecop.freeze(original_time) do
+            expect(Vignette.tests).to eq(cat: 'b') # original choice
+            expect(JSON(session[:v])).to eq( { '352441c2' => { 'n' => 'cat', 'v' => 'b', 't' => original_time.to_i } } )
+          end
 
-          expect([11,22,33].vignette('cat')).to eq(33) # new value
-          expect(session).to eq( {'vignette_352441c2' => 1, 'vignette_d4d3e16f' => 2, v: {'cat' => 33}.to_json} )
+          Timecop.freeze(second_time) do
+            expect(Vignette.tests).to eq(cat: 'b') # same value
+            expect(JSON(session[:v])).to eq( { '352441c2' => { 'n' => 'cat', 'v' => 'b', 't' => original_time.to_i } } )
+          end
+          
+          Timecop.freeze(third_time) do
+            expect([11,22,33].vignette(:cat)).to eq(33) # new value
+            expect(JSON(session[:v])).to eq(
+              {
+                '352441c2' => { 'n' => 'cat', 'v' => 'b', 't' => original_time.to_i },
+                'd4d3e16f' => { 'n' => 'cat', 'v' => 33, 't' => third_time.to_i }
+              }
+            )
+            expect(Vignette.tests).to eq(cat: 33)
+          end
+
+          Timecop.freeze(fourth_time) do
+            expect(['mice', 'mooise'].vignette(:cat)).to eq('mice') # new value
+            expect(JSON(session[:v])).to eq(
+              {
+                '2384053' => { 'n' => 'cat', 'v' => 'mice', 't' => fourth_time.to_i },
+                '352441c2' => { 'n' => 'cat', 'v' => 'b', 't' => original_time.to_i },
+                'd4d3e16f' => { 'n' => 'cat', 'v' => 33, 't' => third_time.to_i }
+              }
+            )
+            expect(Vignette.tests).to eq(cat: 'mice')
+          end
         end
       end
     end

@@ -1,5 +1,11 @@
 module ObjectExtensions
 
+  module Merge
+    def merge(store, key, hash)
+
+    end
+  end
+
   # Extensions to the Array object
   module ArrayExtensions
 
@@ -8,32 +14,36 @@ module ObjectExtensions
     end
 
     # Test will select a random object from the Array
-    def vignette(name=nil)
+    def vignette(name=nil, expect_consistent_name: true)
       vignette_crc = self.crc().abs.to_s(16)
 
       key = "vignette_#{vignette_crc}"
       test_name = nil
 
       store = Vignette.get_store
+      v = store[:v] ? JSON(store[:v]) : {}
 
-      test_name = if name.present?
+      test_name = if expect_consistent_name && name.present?
         name
-      elsif store[:vt] && original_name = JSON(store[:vt])[vignette_crc]
-        original_name
+      elsif test_hash = v[vignette_crc]
+        test_hash['name']
+      elsif name.present? # this logic looks weird, but this is if we don't expect consistent names *and* we don't have a name in v[]
+        name
       else
         loc = caller_locations(1,1).first
-        new_name = "(#{Vignette::strip_path(loc.absolute_path)}:#{loc.lineno})"
-
-        store[:vt] = ( store[:vt].present? ? JSON(store[:vt]) : {} ).merge(vignette_crc => new_name).to_json
-
-        new_name
+        "(#{Vignette::strip_path(loc.absolute_path)}:#{loc.lineno})"
       end
 
-      choice = store[key] ||= Kernel.rand(length) # Store key into storage if not available
-      result = self[choice.to_i]
+      result = if v.has_key?(vignette_crc)
+        v[vignette_crc]['v']
+      else
+        # Store key into storage if not available
+        new_value = self[Kernel.rand(length)]
 
-      # Let's store keys where they are (note, this truncates any other tests with the same name)
-      store[:v] = ( store[:v].present? ? JSON(store[:v]) : {} ).merge(test_name => result).to_json
+        store[:v] = v.merge(vignette_crc => { n: test_name, v: new_value, t: Time.now.to_i }).to_json
+
+        new_value
+      end
 
       return result
     end

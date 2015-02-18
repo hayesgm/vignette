@@ -20,7 +20,7 @@ describe Haml::Filters::Vignette do
           html = Haml::Engine.new(template).render
 
           expect(html).to match(/\<p\>\s+three\s+\<\/p\>\n/)
-          expect(Vignette.tests).to eq({"(haml:3)" => "three"})
+          expect(Vignette.tests).to eq({:"(haml:3)" => "three"})
         end
       end
     end
@@ -40,7 +40,7 @@ describe Haml::Filters::Vignette do
           html = Haml::Engine.new(template).render
 
           expect(html).to match(/\<p\>\s+three\s+\<\/p\>\n/)
-          expect(Vignette.tests).to eq({"numbers" => "three"})
+          expect(Vignette.tests).to eq({:"numbers" => "three"})
         end
       end
     end
@@ -55,7 +55,7 @@ describe Haml::Filters::Vignette do
           html = Haml::Engine.new(template, filename: template_file).render
 
           expect(html).to match(/\<div\>\s+I like\s+scorpians\s+\<\/div\>/)
-          expect(Vignette.tests).to eq({"(ex.html.haml:3)" => "scorpians"})
+          expect(Vignette.tests).to eq({:"(ex.html.haml:3)" => "scorpians"})
         end
       end
     end

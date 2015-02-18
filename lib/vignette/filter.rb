@@ -16,9 +16,9 @@ if defined?(Haml)
       # Otherwise, try to use filename and line
       elsif options[:filename] && options[:line]
         if options[:filename] == "(haml)"
-          lines.vignette("(haml:#{options[:line]})")
+          lines.vignette("(haml:#{options[:line]})", expect_consistent_name: false)
         else
-          lines.vignette("(#{Vignette::strip_path(options[:filename])}:#{options[:line]})")
+          lines.vignette("(#{Vignette::strip_path(options[:filename])}:#{options[:line]})", expect_consistent_name: false)
         end
       # If not given, raise an error
       else
