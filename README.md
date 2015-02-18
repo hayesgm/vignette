@@ -46,7 +46,7 @@ Vignette was crafted to make A/b testing as simple as possible.  Simply run the 
     # Other options
     Vignette.init(logging: true) # add debug logging
 
-Running a Vignette test in your application:
+### Running a Vignette test in your application:
 
     [ 1,2,3 ].vignette # Chooses an option and stores test as indicated above
     %w{one two three}.vignette # Same with strings
@@ -58,9 +58,11 @@ Running a Vignette test in your application:
       Test <strong>two</strong>
       Test #{three}
 
-Finally, to store in analytics which tests were run, simple check
+The choices for these tests are exposed through the `Vignette.test` method:
 
     Vignette.test -> { '(app/views/users/new.html.haml:35)' => 'Test one' } # First choice was select for new.html.haml test line 35
+
+You may store these values as properties in your analytics system.
 
 ## Caveats
 
