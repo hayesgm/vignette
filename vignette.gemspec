@@ -17,11 +17,11 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency "activesupport"
-  gem.add_dependency "actionpack"
+  gem.add_dependency "activesupport", ">= 3.0"
+  gem.add_dependency "actionpack", ">= 3.0"
 
-  gem.add_development_dependency "rspec"
-  gem.add_development_dependency "guard-rspec"
-  gem.add_development_dependency "haml"
-  gem.add_development_dependency "pry-byebug"
+  gem.add_development_dependency "rspec", ">= 3.2.0"
+  gem.add_development_dependency "guard-rspec", ">= 4.5.0"
+  gem.add_development_dependency "haml", ">= 4.0.6"
+  gem.add_development_dependency "pry-byebug", ">= 0"
 end
