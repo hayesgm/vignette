@@ -32,7 +32,11 @@ Or install it yourself as:
 
 ## Usage
 
-Vignette was crafted to make A/b testing as simple as possible.  Simply run the `vignette` function on any Array and get the result from a A/b test.  Vignette will store this choice in session, a cookies or nowhere, based on how you configure Vignette.  If you're in the request cycle (within an around_filter), Vignette will grab `session` or `cookies` for you.  Otherwise, you'll need to specify where to store the result (if you want it consistent for the end-user).  Vignette `tests` are identified by a checksum of the Array, and thus, changing the Array results in a new `test`.
+Vignette was crafted to make A/b testing as simple as possible.  Simply run the `vignette` function on any Array and get the result from a A/b test.  Vignette will store this choice in session, a cookies or a simple Hash object, based on how you configure Vignette.
+
+If you run Vignettes from within a Rails request cycle (set up automatically by an `around_filter`), Vignette will grab `session` or `cookies` for you.  Otherwise, you'll need to specify where to store the result (if you want it consistent for the end user).  You can simply call `Vignette.with_repo(Hash.new)` with wherever you want the current tests stored.
+
+Vignette `tests` are identified by a checksum of the Array, and thus, changing the Array results in a new `test`.
   
     # To store in session (default)
     Vignette.init(store: :session)
@@ -63,6 +67,12 @@ The choices for these tests are exposed through the `Vignette.test` method:
     Vignette.test -> { '(app/views/users/new.html.haml:35)' => 'Test one' } # First choice was select for new.html.haml test line 35
 
 You may store these values as properties in your analytics system.
+
+## Stores
+
+You can set anything for the store so long as it can take keys and values based on []= (e.g. `repo["k"] = "v"`).  We will handle serialization, etc.  That said, if you are using a custom store, it must be unique for each "user".  Thus, if you want to keep a global hash object `TESTS`, then you would want to do: `Vignette.with_repo(TESTS[user.id] ||= {})`.
+
+If you are in `rails`, then you can simply run `Vignette.set_store(store: :session)` and Vignette will automatically set the repo to be `session` or `cookies` for each request.
 
 ## Naming Tests
 
