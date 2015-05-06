@@ -24,10 +24,10 @@ module ObjectExtensions
         "(#{Vignette::strip_path(loc.absolute_path)}:#{loc.lineno})"
       end
 
-      result = if vig.has_key?(vignette_crc)
-        vig[vignette_crc]['v']
-      elsif Vignette.force_choice && self.include?(Vignette.force_choice)
+      result = if Vignette.force_choice && self.include?(Vignette.force_choice)
         Vignette.force_choice
+      elsif vig.has_key?(vignette_crc)
+        vig[vignette_crc]['v']
       else
         # Store key into storage if not available
         new_value = self[Vignette::rand(length)]
