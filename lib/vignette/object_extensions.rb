@@ -1,11 +1,5 @@
 module ObjectExtensions
 
-  module Merge
-    def merge(store, key, hash)
-
-    end
-  end
-
   # Extensions to the Array object
   module ArrayExtensions
 
@@ -16,9 +10,6 @@ module ObjectExtensions
     # Test will select a random object from the Array
     def vignette(name=nil, expect_consistent_name: true)
       vignette_crc = self.crc().abs.to_s(16)
-
-      key = "vignette_#{vignette_crc}"
-      test_name = nil
 
       vig = Vignette.vig
 
@@ -35,9 +26,11 @@ module ObjectExtensions
 
       result = if vig.has_key?(vignette_crc)
         vig[vignette_crc]['v']
+      elsif Vignette.force_choice && self.include?(Vignette.force_choice)
+        Vignette.force_choice
       else
         # Store key into storage if not available
-        new_value = self[Kernel.rand(length)]
+        new_value = self[Vignette::rand(length)]
 
         Vignette.set_vig( vig.merge(vignette_crc => { n: test_name, v: new_value, t: Time.now.to_i }) )
 
@@ -68,7 +61,13 @@ module ObjectExtensions
         Hash.new
       end
 
-      Vignette.with_repo(repo) do
+      force_choice = if Vignette.force_choice_param
+        params[Vignette.force_choice_param]
+      else
+        nil
+      end
+
+      Vignette.with_repo(repo, force_choice) do
         yield
       end
     end

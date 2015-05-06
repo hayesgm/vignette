@@ -177,4 +177,28 @@ describe Vignette do
     
   end
 
+  context 'for force choice' do
+    let!(:session) { Hash.new }
+    let(:array) { %w{a b c d e f g h i j k l m n o p q r s t u v w x y z} }
+
+    it 'should store tests in session' do
+      expect(Kernel).to receive(:rand).never
+
+      Vignette.set_repo(session, 'p')
+
+      expect(array.vignette).to eq('p')
+      expect(Vignette.tests).to eq({})
+    end
+
+    it 'should store tests in session' do
+      expect(Kernel).to receive(:rand).and_return(4)
+
+      Vignette.set_repo(session, 'zz')
+
+      expect(array.vignette).to eq('e')
+      expect(Vignette.tests).to_not eq({})
+    end
+
+  end
+
 end

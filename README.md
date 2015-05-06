@@ -92,6 +92,24 @@ This will lead to `Vignette.tests` to include: `{ "cat_names" => "Chairman Meow"
 
 Without a name, Vignettes will try to name themselves based on the name of the falling calling them, e.g. `(app/models/user.rb:25)` or `(app/views/users/new.html.haml:22)`
 
+## Force Choice
+
+When using in Ruby on Rails, you may set the `force_choice_param` flag, which will allow Vignette to choose a specific split based on a url param.  E.g. in an initializer:
+
+```ruby
+Vignette.force_choice_param = :v
+```
+
+and in a controller (e.g. `home_controller.rb`)
+
+```ruby
+def home
+    @salutation = ['hello', 'goodbye'].vignette
+end
+
+```
+Then, visit: `http://localhost:3000/?v=goodbye`. This will automatically choose the 'goodbye' split. Note: this will only choose a given split if that is an option in the Vignette array itself (e.g. `v=see+you` would be ignored).
+
 ## Caveats
 
 Tests are stored in your store object based on the original input.  If you change the input of the test (regardless of the name), a new test will be created.  Thus [1,2,3].vignette(:numbers) and [2,3,4].vignette(:numbers) will always be considered unique tests.  New tests will overwrite old tests with the same name in `Vignette.tests`.  This is by design so that you can update the test, have new results, but keep the same test name in your analytics system.
