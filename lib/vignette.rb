@@ -98,7 +98,7 @@ module Vignette
 
     name_values = vig.values.map { |v| [ v['n'], [ v['t'], v['v'] ] ] }.group_by { |el| el[0] }
 
-    arr = name_values.map { |k,v| [ k.to_sym, v.sort { |a,b| b[1][0] <=> a[1][0] }.first[1][1] ] }
+    arr = name_values.map { |k,v| [ k.to_s.to_sym, v.sort { |a,b| b[1][0] <=> a[1][0] }.first[1][1] ] }
 
     Hash[arr]
   end

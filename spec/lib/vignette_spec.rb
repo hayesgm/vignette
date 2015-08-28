@@ -28,6 +28,11 @@ describe Vignette do
           expect(array.vignette).to eq('b'); new_line = __LINE__
           expect(Vignette.tests).to eq({:"(vignette_spec.rb:#{line})" => 'b'})
         end
+
+        it 'should handle vignettes with number as names' do
+          expect(%w{a a a}.vignette(0)).to eq('a')
+          expect(Vignette.tests).to eq(:"0" => "a")
+        end
       end
 
       context "for multiple runs" do
