@@ -62,9 +62,9 @@ Vignette `tests` are identified by a checksum of the Array, and thus, changing t
       Test <strong>two</strong>
       Test #{three}
 
-The choices for these tests are exposed through the `Vignette.test` method:
+The choices for these tests are exposed through the `Vignette.tests` method:
 
-    Vignette.test -> { '(app/views/users/new.html.haml:35)' => 'Test one' } # First choice was select for new.html.haml test line 35
+    Vignette.tests -> { '(app/views/users/new.html.haml:35)' => 'Test one' } # First choice was select for new.html.haml test line 35
 
 You may store these values as properties in your analytics system.
 
